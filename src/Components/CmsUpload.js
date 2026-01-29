@@ -1,28 +1,28 @@
 import React, { useState, useRef } from "react";
 import { sessionValidation, uploadCMSZip } from "../Apis/api";
-import "../Styles/Tabs.css";
+import "../Styles/AssetValidation.css";
 import swal from 'sweetalert';
 import JSZip from 'jszip';
 import { ALLOWED_EXTENSIONS_FOR_CMS_UPLOAD } from "../Constants/appConstant";
 
-// Define the size limits in bytes
-const MAX_FILE_SIZE = 10 * 1024 * 1024 * 1024; // 10 GB in bytes
-const VALIDATION_FILE_SIZE_LIMIT = 1.5 * 1024 * 1024 * 1024; // 1.5 GB in bytes
+const MAX_FILE_SIZE = 10 * 1024 * 1024 * 1024;
+const VALIDATION_FILE_SIZE_LIMIT = 1.5 * 1024 * 1024 * 1024;
 
-const CmsUpload = ({ onUpload, onLogout, setLoading }) => {
-  const [cmsZip, setCmsZip] = useState(null);
-  const [uploadStatus, setUploadStatus] = useState("");
-  const [allFilesValid, setAllFilesValid] = useState(false);
-  const [validatingFiles, setValidatingFiles] = useState(false);
-  const fileInputRef = useRef(null);
+const CmsUpload = ({ selectedSubOption, onUpload, onLogout, setLoading }) => {
+  const [pdfZip, setPdfZip] = useState(null);
+  const [artworkZip, setArtworkZip] = useState(null);
+  const [pdfUploadStatus, setPdfUploadStatus] = useState("");
+  const [artworkUploadStatus, setArtworkUploadStatus] = useState("");
+  const [validatingPdf, setValidatingPdf] = useState(false);
+  const [validatingArtwork, setValidatingArtwork] = useState(false);
+  const pdfRef = useRef(null);
+  const artworkRef = useRef(null);
 
-  // Check if the file extension is allowed
   const isFileValid = (fileName) => {
     const fileExt = fileName.split(".").pop().toLowerCase();
     return ALLOWED_EXTENSIONS_FOR_CMS_UPLOAD.includes(fileExt);
   };
 
-  // Validate the ZIP file
   const validateZip = async (zipFile) => {
     const zip = new JSZip();
     try {
@@ -41,31 +41,23 @@ const CmsUpload = ({ onUpload, onLogout, setLoading }) => {
         }
       });
 
-      // Check if there are any valid files
       if (!hasValidFiles) {
         allFilesValid = false;
-        setUploadStatus("Upload failed because the ZIP file does not contain any valid files.");
+        return { valid: false, message: "ZIP file does not contain any valid files." };
       }
 
       if (allFilesValid) {
-        setCmsZip(zipFile);
-        setUploadStatus("");
-        setAllFilesValid(true);
+        return { valid: true, message: "" };
       } else {
-        setCmsZip(null);
-        setUploadStatus("Upload failed because one or more files either have a space in the filename or an invalid CMS extension.");
-        setAllFilesValid(false);
+        return { valid: false, message: "One or more files have a space in the filename or an invalid CMS extension." };
       }
     } catch (error) {
       console.error("Error loading zip file:", error);
-      setUploadStatus("Error loading zip file");
-      setAllFilesValid(false);
-    } finally {
-      setValidatingFiles(false);
+      return { valid: false, message: "Error loading zip file" };
     }
   };
 
-  const handleFileChange = async (event) => {
+  const handlePdfFileChange = async (event) => {
     if (!sessionValidation()) {
       onLogout();
       return;
@@ -74,44 +66,86 @@ const CmsUpload = ({ onUpload, onLogout, setLoading }) => {
     const selectedFile = event.target.files[0];
     if (selectedFile) {
       if (selectedFile.size > MAX_FILE_SIZE) {
-        setCmsZip(null);
-        setUploadStatus("File size exceeds the 10 GB limit.");
-        setAllFilesValid(false);
+        setPdfZip(null);
+        setPdfUploadStatus("File size exceeds the 10 GB limit.");
         return;
       }
 
       if (selectedFile.size <= VALIDATION_FILE_SIZE_LIMIT) {
-        // Perform client-side validation for files <= 1.5 GB
         const fileExtension = selectedFile.name.split(".").pop().toLowerCase();
         const fileNameWithoutExtension = selectedFile.name.split(".").slice(0, -1).join(".");
 
         if (fileExtension === "zip" && fileNameWithoutExtension !== "") {
-          setValidatingFiles(true);
-          await validateZip(selectedFile);
+          setValidatingPdf(true);
+          const result = await validateZip(selectedFile);
+          if (result.valid) {
+            setPdfZip(selectedFile);
+            setPdfUploadStatus("");
+          } else {
+            setPdfZip(null);
+            setPdfUploadStatus("Upload failed because " + result.message);
+          }
+          setValidatingPdf(false);
         } else {
-          setCmsZip(null);
-          setUploadStatus("Only zip files are accepted and file name should not be empty.");
-          setAllFilesValid(false);
-          setValidatingFiles(false);
+          setPdfZip(null);
+          setPdfUploadStatus("Only zip files are accepted and file name should not be empty.");
         }
       } else {
-        // Directly set the file for upload if larger than 1.5 GB
-        setCmsZip(selectedFile);
-        setUploadStatus("");
-        setAllFilesValid(true); // Assume the file is valid if we skip client-side validation
+        setPdfZip(selectedFile);
+        setPdfUploadStatus("");
       }
     }
   };
 
-  const handleUpload = async () => {
+  const handleArtworkFileChange = async (event) => {
     if (!sessionValidation()) {
       onLogout();
       return;
     }
-    if (cmsZip) {
+
+    const selectedFile = event.target.files[0];
+    if (selectedFile) {
+      if (selectedFile.size > MAX_FILE_SIZE) {
+        setArtworkZip(null);
+        setArtworkUploadStatus("File size exceeds the 10 GB limit.");
+        return;
+      }
+
+      if (selectedFile.size <= VALIDATION_FILE_SIZE_LIMIT) {
+        const fileExtension = selectedFile.name.split(".").pop().toLowerCase();
+        const fileNameWithoutExtension = selectedFile.name.split(".").slice(0, -1).join(".");
+
+        if (fileExtension === "zip" && fileNameWithoutExtension !== "") {
+          setValidatingArtwork(true);
+          const result = await validateZip(selectedFile);
+          if (result.valid) {
+            setArtworkZip(selectedFile);
+            setArtworkUploadStatus("");
+          } else {
+            setArtworkZip(null);
+            setArtworkUploadStatus("Upload failed because " + result.message);
+          }
+          setValidatingArtwork(false);
+        } else {
+          setArtworkZip(null);
+          setArtworkUploadStatus("Only zip files are accepted and file name should not be empty.");
+        }
+      } else {
+        setArtworkZip(selectedFile);
+        setArtworkUploadStatus("");
+      }
+    }
+  };
+
+  const handlePdfUpload = async () => {
+    if (!sessionValidation()) {
+      onLogout();
+      return;
+    }
+    if (pdfZip) {
       const willUpload = await swal({
         title: "Are you sure?",
-        text: "You want to upload files to CMS!",
+        text: "You want to upload CMS Cover PDFs!",
         icon: "warning",
         buttons: true,
         dangerMode: true,
@@ -119,64 +153,151 @@ const CmsUpload = ({ onUpload, onLogout, setLoading }) => {
       if (willUpload) {
         try {
           setLoading(true);
-          const response = await uploadCMSZip(cmsZip);
+          const response = await uploadCMSZip(pdfZip);
           setLoading(false);
           console.log("Upload response:", response);
 
           if (response === 200) {
-            setUploadStatus("Upload successful");
+            setPdfUploadStatus("Upload successful");
+            setPdfZip(null);
+            pdfRef.current.value = "";
             onUpload();
           } else if (response === 401) {
             onLogout();
           } else {
-            setUploadStatus("Upload failed because one or more files either have a space in the filename or an invalid CMS extension.");
+            setPdfUploadStatus("Upload failed because one or more files either have a space in the filename or an invalid CMS extension.");
           }
         } catch (error) {
-          setUploadStatus("Upload failed");
+          setPdfUploadStatus("Upload failed");
           console.error("Upload error:", error);
         }
       }
     } else {
-      setUploadStatus("No file selected");
+      setPdfUploadStatus("No file selected");
     }
-    setCmsZip(null);
-    fileInputRef.current.value = "";
-    setAllFilesValid(false);
+  };
+
+  const handleArtworkUpload = async () => {
+    if (!sessionValidation()) {
+      onLogout();
+      return;
+    }
+    if (artworkZip) {
+      const willUpload = await swal({
+        title: "Are you sure?",
+        text: "You want to upload CMS Cover Artwork!",
+        icon: "warning",
+        buttons: true,
+        dangerMode: true,
+      });
+      if (willUpload) {
+        try {
+          setLoading(true);
+          const response = await uploadCMSZip(artworkZip);
+          setLoading(false);
+          console.log("Upload response:", response);
+
+          if (response === 200) {
+            setArtworkUploadStatus("Upload successful");
+            setArtworkZip(null);
+            artworkRef.current.value = "";
+            onUpload();
+          } else if (response === 401) {
+            onLogout();
+          } else {
+            setArtworkUploadStatus("Upload failed because one or more files either have a space in the filename or an invalid CMS extension.");
+          }
+        } catch (error) {
+          setArtworkUploadStatus("Upload failed");
+          console.error("Upload error:", error);
+        }
+      }
+    } else {
+      setArtworkUploadStatus("No file selected");
+    }
   };
 
   return (
-    <div className="tab-container">
-      <div className="upload-form">
-        <h3 className="headline">Ingest Assets to CMS</h3>
-        <label className="lable-info" htmlFor="cmsZip">
-          Select Zip Files (size up to 10 GB):
-        </label>
-        <label htmlFor="cmsZip">
-          <b>All the files inside the zip will be ingested into CMS. There isn't any validation.
-            <br />
-            Please use this functionality with caution.</b>
-        </label>
-        <br />
-        <input
-          type="file"
-          id="cmsZip"
-          name="cmsZip"
-          onChange={handleFileChange}
-          ref={fileInputRef}
-        />
-        <button
-          className={`upload-button ${!allFilesValid ? 'disabled' : ''}`}
-          onClick={handleUpload}
-          disabled={!allFilesValid}
-        >
-          Upload To CMS
-        </button>
-
-        {validatingFiles && <p className="upload-status">Validating files...</p>}
-        {uploadStatus && (
-          <p className={`upload-status ${uploadStatus.includes("successful") ? "success" : "failure"}`}>
-            {uploadStatus}
+    <div className="page-container">
+      <div className="content-card">
+        {(!selectedSubOption || selectedSubOption === "cmsPdf") && (
+        <div className="upload-section">
+          <p className="upload-section-description">
+            Upload Final Cover PDFs. Cover PDF will trigger Cover PDF workflow in Activiti. Accepted PDF types include but are not limited to: ISBN_cover.pdf, ISBN_cover.tif, ISBN_spine.pdf, ISBN_endpaper.pdf, ISBN_jacket.pdf, ISBN_jacket_spotuv.pdf, ISBN_cover_inside.pdf and ISBN_case_side.pdf.
           </p>
+
+          <div
+            className="drop-zone"
+            onClick={() => pdfRef.current && pdfRef.current.click()}
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => {
+              e.preventDefault();
+              handlePdfFileChange({ target: { files: e.dataTransfer.files } });
+            }}
+          >
+            <p className="drop-zone-text">Click or drag zip file here</p>
+            <input
+              type="file"
+              id="pdfZip"
+              name="pdfZip"
+              onChange={handlePdfFileChange}
+              ref={pdfRef}
+              accept=".zip"
+              hidden
+            />
+          </div>
+
+          <button className="btn-upload" onClick={handlePdfUpload}>
+            Upload Cover PDFs
+          </button>
+
+          {validatingPdf && <p className="upload-status">Validating files...</p>}
+          {pdfUploadStatus && (
+            <p className={`upload-status ${pdfUploadStatus.includes("successful") ? "success" : "failure"}`}>
+              {pdfUploadStatus}
+            </p>
+          )}
+        </div>
+        )}
+
+        {(!selectedSubOption || selectedSubOption === "cmsCover") && (
+        <div className="upload-section" style={{ marginTop: 24 }}>
+          <p className="upload-section-description">
+            Upload Cover Artwork files. Artwork will directly ingested to the CMS. Accepted file types include but are not limited to: ISBN_cover_artwork.zip, ISBN_cover.indd, ISBN_cover.tiff, ISBN_cover.jpg and ISBN_case.indd.
+          </p>
+
+          <div
+            className="drop-zone"
+            onClick={() => artworkRef.current && artworkRef.current.click()}
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => {
+              e.preventDefault();
+              handleArtworkFileChange({ target: { files: e.dataTransfer.files } });
+            }}
+          >
+            <p className="drop-zone-text">Click or drag zip file here</p>
+            <input
+              type="file"
+              id="artworkZip"
+              name="artworkZip"
+              onChange={handleArtworkFileChange}
+              ref={artworkRef}
+              accept=".zip"
+              hidden
+            />
+          </div>
+
+          <button className="btn-upload" onClick={handleArtworkUpload}>
+            Upload Artwork
+          </button>
+
+          {validatingArtwork && <p className="upload-status">Validating files...</p>}
+          {artworkUploadStatus && (
+            <p className={`upload-status ${artworkUploadStatus.includes("successful") ? "success" : "failure"}`}>
+              {artworkUploadStatus}
+            </p>
+          )}
+        </div>
         )}
       </div>
     </div>

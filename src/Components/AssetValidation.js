@@ -2,7 +2,7 @@ import React, { useState, useRef } from "react";
 import { uploadEpubZip, uploadPdf, sessionValidation } from "../Apis/api";
 import "../Styles/AssetValidation.css";
 
-const AssetValidation = ({ onLogout, setLoading }) => {
+const AssetValidation = ({ selectedSubOption, onLogout, setLoading }) => {
   const [epubZip, setEpubZip] = useState(null);
   const [pdfFile, setPdfFile] = useState(null);
   const [epubZipUploadStatus, setEpubZipUploadStatus] = useState("");
@@ -139,6 +139,7 @@ const AssetValidation = ({ onLogout, setLoading }) => {
   return (
     <div className="page-container">
       <div className="content-card">
+        {(!selectedSubOption || selectedSubOption === "epubZip") && (
         <div className="upload-section">
           <p className="upload-section-description">
             Select Zip Files containing epubs (size upto 10 GB).
@@ -175,7 +176,9 @@ const AssetValidation = ({ onLogout, setLoading }) => {
             {epubZipUploadStatus}
           </p>
         </div>
+        )}
 
+        {(!selectedSubOption || selectedSubOption === "pdfFile") && (
         <div className="upload-section" style={{ marginTop: 24 }}>
           <p className="upload-section-description">
             Select only text, cover and web pdf file for preflight (after successful upload
@@ -211,6 +214,7 @@ const AssetValidation = ({ onLogout, setLoading }) => {
             {pdfUploadStatus}
           </p>
         </div>
+        )}
       </div>
     </div>
   );
