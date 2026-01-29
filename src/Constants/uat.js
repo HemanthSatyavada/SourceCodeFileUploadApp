@@ -1,0 +1,1 @@
+export const API_BASE_URL = 'http://asset-upload-backend-u.ap.corplan.net';

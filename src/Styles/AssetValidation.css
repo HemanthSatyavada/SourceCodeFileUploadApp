@@ -1,0 +1,97 @@
+.tab-container {
+  background-color: #F5F5F5;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.upload-form {
+  margin-bottom: 20px;
+  padding: 20px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.upload-form h3 {
+  margin: 0 0 10px;
+}
+
+.upload-form label {
+  display: block;
+  cursor: pointer;
+}
+
+.file-input-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 2px dashed #aaa;
+  border-radius: 4px;
+  padding: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.file-input-container:hover {
+  background-color: #F9F9F9;
+}
+
+.file-input-container span {
+  flex-grow: 1;
+  margin-right: 10px;
+}
+
+.file-input-container input[type="file"] {
+  display: none;
+}
+
+.upload-form button {
+  background-color: #007BFF;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.upload-form button:hover {
+  background-color: #0056B3;
+}
+
+.upload-status {
+  font-size: 14px;
+  margin-top: 8px;
+}
+
+.upload-status.success {
+  color: #28A745;
+  /* Green color for success */
+}
+
+.upload-status.failure {
+  color: #DC3545;
+  /* Red color for failure */
+}
+
+.lable-info {
+  font-size: large;
+  font-weight: 500;
+}
+
+.headline {
+  color: rgb(77, 166, 255);
+}
+.upload-status {
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+.status-success {
+  color: green;
+}
+
+.status-failure {
+  color: red;
+}

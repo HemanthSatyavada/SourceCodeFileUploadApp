@@ -1,0 +1,99 @@
+.tabs-container {
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+  margin: 0 auto;
+  text-align: left;
+}
+
+.tab-buttons {
+  display: flex;
+  justify-content: left;
+  margin-bottom: 20px;
+  text-align: left;
+  padding: 20px;
+}
+
+.tab-buttons button {
+  background-color: #eee;
+  border: none;
+  padding: 10px 20px;
+  margin: 0 5px;
+  cursor: pointer;
+  border-radius: 3px;
+  transition: background-color 0.3s;
+}
+
+.tab-buttons button.active {
+  background-color: #007bff;
+  color: white;
+}
+
+.tab-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.tab-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.tab-submit-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-top: 10px;
+}
+
+.tab-submit-button:hover {
+  background-color: #0056b3;
+}
+
+/* Tabs.css */
+
+.tabs {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.tab-button {
+  padding: 10px 20px;
+  border: none;
+  background-color: #f4f4f4;
+  color: #333;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.tab-button.active {
+  background-color: #007bff;
+  color: white;
+}
+
+.upload-status {
+  margin-top: 10px;
+  font-weight: bold;
+  color: #007bff; /* Blue color */
+}
+
+.upload-button {
+  background-color: #ccc; 
+  color: #666;
+  cursor: pointer; 
+}
+
+.upload-button:disabled {
+  background-color: #eee; 
+  color: #999; 
+  cursor: not-allowed; 
+}
