@@ -137,60 +137,80 @@ const AssetValidation = ({ onLogout, setLoading }) => {
   };
 
   return (
-    <div className="tab-container">
-      <div className="upload-form">
-        <h3 className="headline">Upload Epub Zip</h3>
-        <label className="lable-info" htmlFor="text1">
-          Select Zip Files containing epubs (size upto 10 GB) :
-        </label>
-        <label htmlFor="text">
-          {" "}
-          <b>
-          Only ePubs under the zip will be considered and validated against only Penta validation.
-            <br />
-            Also, ePubs will not be archived and will be deleted from S3 in 24
-            hours.
-          </b>
-        </label>
-        <br />
-        <input
-          type="file"
-          id="epubZip"
-          name="epubZip"
-          onChange={handleEpubZipChange}
-          ref={epubZipRef}
-        />
-        <button onClick={handleEpubZipUpload}>Upload Epub file</button>
-        <p
-          className={`upload-status ${
-            epubZipUploadStatus.includes("successful") ? "success" : "failure"
-          }`}
-        >
-          {epubZipUploadStatus}
-        </p>
-      </div>
-      <div className="upload-form">
-        <h3 className="headline">Upload PDF File</h3>
-        <label className="lable-info" htmlFor="text1">
-          Select only text, cover and web pdf file for preflight (after successful upload
-          report will be delivered via email)
-        </label>
-        <br />
-        <input
-          type="file"
-          id="pdfFile"
-          name="pdfFile"
-          onChange={handlePdfChange}
-          ref={pdfRef}
-        />
-        <button onClick={handlePdf}>Upload Pdf File</button>
-        <p
-          className={`upload-status ${
-            pdfUploadStatus.includes("successful") ? "success" : "failure"
-          }`}
-        >
-          {pdfUploadStatus}
-        </p>
+    <div className="page-container">
+      <div className="content-card">
+        <div className="upload-section">
+          <p className="upload-section-description">
+            Select Zip Files containing epubs (size upto 10 GB).
+            Only ePubs under the zip will be considered and validated against only Penta validation.
+            Also, ePubs will not be archived and will be deleted from S3 in 24 hours.
+          </p>
+
+          <div
+            className="drop-zone"
+            onClick={() => epubZipRef.current && epubZipRef.current.click()}
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => {
+              e.preventDefault();
+              handleEpubZipChange({ target: { files: e.dataTransfer.files } });
+            }}
+          >
+            <p className="drop-zone-text">Click or drag zip file here</p>
+            <input
+              type="file"
+              id="epubZip"
+              name="epubZip"
+              onChange={handleEpubZipChange}
+              ref={epubZipRef}
+              accept=".zip"
+              hidden
+            />
+          </div>
+
+          <button className="btn-upload" onClick={handleEpubZipUpload}>
+            Upload Epub file
+          </button>
+
+          <p className={`upload-status ${epubZipUploadStatus.includes("successful") ? "success" : "failure"}`}>
+            {epubZipUploadStatus}
+          </p>
+        </div>
+
+        <div className="upload-section" style={{ marginTop: 24 }}>
+          <p className="upload-section-description">
+            Select only text, cover and web pdf file for preflight (after successful upload
+            report will be delivered via email)
+          </p>
+
+          <div
+            className="drop-zone"
+            onClick={() => pdfRef.current && pdfRef.current.click()}
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => {
+              e.preventDefault();
+              handlePdfChange({ target: { files: e.dataTransfer.files } });
+            }}
+          >
+            <p className="drop-zone-text">Click or drag pdf file here</p>
+            <input
+              type="file"
+              id="pdfFile"
+              name="pdfFile"
+              onChange={handlePdfChange}
+              ref={pdfRef}
+              accept=".pdf"
+              hidden
+            />
+          </div>
+
+          <button className="btn-upload" onClick={handlePdf}>
+            Upload Pdf File
+          </button>
+
+          <p className={`upload-status ${pdfUploadStatus.includes("successful") ? "success" : "failure"}`}>
+            {pdfUploadStatus}
+          </p>
+        </div>
       </div>
     </div>
   );

@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import "./App.css";
 import Login from "./Login";
 import Tabs from "./Components/Tabs";
-import Header from "./Header";
 import Footer from "./Footer";
 import { USER_DETAILS } from "./Utils/Constants";
 import { getExpiryTime } from "./Apis/api";
@@ -38,7 +37,6 @@ function App() {
 
   return (
     <div className="App">
-      <Header isLoggedIn={isLoggedIn} onLogout={handleLogout} />
       <main className="app-main">
         {isLoggedIn ? (
           <Tabs onLogout={handleLogout} />
